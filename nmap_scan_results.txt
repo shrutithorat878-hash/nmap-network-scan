@@ -1,0 +1,73 @@
+cd ~/nmap-network-scan
+cat > nmap_scan_results.txt << 'EOF'
+==============================================================
+ NMAP SCAN RESULTS
+==============================================================
+ Date          : 2026-10-09
+ Scanner       : Kali Linux, Nmap 7.99
+ Target        : Kali Linux VM (own machine, VirtualBox NAT)
+ Target IP     : 10.0.2.15
+ Authorisation : Own machine, isolated lab
+==============================================================
+
+1. BASIC SCAN -> nmap 10.0.2.15
+--------------------------------------------------------------
+Host is up (0.00014s latency).
+Not shown: 998 filtered tcp ports (no-response)
+PORT   STATE SERVICE
+22/tcp open  ssh
+80/tcp open  http
+
+2. SERVICE VERSION SCAN -> nmap -sV 10.0.2.15
+--------------------------------------------------------------
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 10.3p1 Debian 4 (protocol 2.0)
+80/tcp open  http    Apache httpd 2.4.68 ((Debian))
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+3. OS DETECTION SCAN -> sudo nmap -O 10.0.2.15
+--------------------------------------------------------------
+Aggressive OS guesses: Linux 2.6.32 (96%), Linux 5.0 - 6.2 (96%),
+Linux 6.8 (95%), Linux 5.9 (94%) ...
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 0 hops
+Note: Nmap warned that results may be unreliable because it
+could not find at least 1 open and 1 closed port. Distance is
+0 hops because the scan was run against the local machine.
+
+4. OPEN PORTS AND SECURITY ANALYSIS
+==============================================================
+
+PORT 22/tcp - SSH (OpenSSH 10.3p1)
+  What it does  : Secure Shell. Gives encrypted remote login and
+                  command execution on the machine.
+  Risk level    : MEDIUM
+  Why           : Traffic is encrypted and the version is very
+                  recent, but SSH is a common brute-force target
+                  if passwords are weak or root login is allowed.
+  Recommendation: Use key-based login, set PermitRootLogin no,
+                  install fail2ban, and disable SSH when not needed.
+
+PORT 80/tcp - HTTP (Apache httpd 2.4.68)
+  What it does  : Web server that serves web pages and apps.
+  Risk level    : MEDIUM
+  Why           : Traffic is unencrypted (plain HTTP). Web apps on
+                  it can have flaws (SQL injection, XSS), and the
+                  banner reveals the exact Apache version.
+  Recommendation: Enable HTTPS, set ServerTokens Prod to hide the
+                  version, keep Apache updated, and stop it
+                  when not in use.
+
+5. SUMMARY
+==============================================================
+ Open ports      : 2 (22/ssh, 80/http)
+ Filtered ports  : 998 (no response, a firewall or dropped traffic)
+ Medium risk     : 22 (SSH), 80 (HTTP)
+ OS guess        : Linux (Kali/Debian based)
+
+ Overall: The attack surface is small, and the other 998 ports
+ are filtered. Both services were started manually for this lab.
+ In a real system, disable any service that is not needed,
+ use HTTPS, and harden SSH.
+==============================================================
+EOF
